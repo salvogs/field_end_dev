@@ -18,10 +18,7 @@ float full_time_motore1 = 0, full_time_motore2 = 0, step_1 = 0, step_2 = 0;
 bool alzo1 = false, abbasso1 = false;
 bool alzo2 = false, abbasso2 = false;
 bool stop1 = false, stop2 = false;
-// stato motori: 0 - fermo, 1 - movimento
-//engine_state[0] -> motore 1
-//engine_state[1] ->
-// bool engine_state[2]; 
+ 
 
 void engineUp(uint8_t e_id, uint8_t counter) {
     
@@ -39,8 +36,6 @@ void engineUp(uint8_t e_id, uint8_t counter) {
       alzo2 = true;
     }
   } 
-  /***  TODO ALZO MOTORE DI UNO STEP (per X tempo)***/
-
 }
 
 void engineDown(uint8_t e_id, uint8_t counter) {
@@ -118,6 +113,9 @@ void doAction(uint8_t counter, uint8_t index) {
 
 
 void contaPressioni(uint8_t index) {
+
+  if((alzo1 || abbasso1) && (index == UP1 || index == DOWN1)) return;
+  if((alzo2 || abbasso2) && (index == UP2 || index == DOWN2)) return;
 
   TimeCounter *t = &counters[index > 1 ? index - 2 : index];
   
