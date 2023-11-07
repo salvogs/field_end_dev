@@ -2,19 +2,21 @@
 #include <Arduino.h>
 // #include "../libs/PCA9539.h"
 #include "./header/macros.h"
-
+#include <EEPROM.h>
 
 
 uint32_t t = 0;
-
+uint16_t address = 0;
 
 void setup() {
 
   Serial.begin(115200);
 
-
-
   Serial.println("setup...");
+
+  // // init EEPROM
+  // EEPROM.begin(512);
+
   delay(100);
 
   initPin();
@@ -22,6 +24,7 @@ void setup() {
   delay(100);
 
   Serial.println("done");
+  digitalWrite(13, HIGH);
 }
 
 
@@ -48,6 +51,7 @@ void loop() {
   //   // Serial.printf("\tUP --- DOWN\nmotore1\t%d  ---  %d\nmotore2\t%d  ---  %d\n",alzo1,abbasso1,alzo2,abbasso2);
   //   t = millis();
   // }
+  
 }
 
 

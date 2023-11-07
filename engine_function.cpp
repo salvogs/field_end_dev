@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <Arduino.h>
+#include <EEPROM.h>
 #include "./header/engine_function.h"
 
 
@@ -28,10 +29,12 @@ void engineUp(uint8_t e_id, uint8_t counter) {
     // se finecorsa inferiore raggiunto => alzo tutto
     if(e_id == 1) {
       Serial.println("ALZO MOTORE 1");
+      digitalWrite(OUT_UP1,HIGH);
       e1_time = millis();
       alzo1 = true;
     } else {
       Serial.println("ALZO MOTORE 2");
+      digitalWrite(OUT_UP2,HIGH);
       e2_time = millis();
       alzo2 = true;
     }
@@ -44,10 +47,12 @@ void engineDown(uint8_t e_id, uint8_t counter) {
     // se finecorsa superiore raggiunto => abbasso tutto
     if(e_id == 1) {
       Serial.println("ABBASSO MOTORE 1");
+      digitalWrite(OUT_DOWN1,HIGH);
       e1_time = millis();
       abbasso1 = true;
     } else {
       Serial.println("ABBASSO MOTORE 2");
+      digitalWrite(OUT_DOWN2,HIGH);
       e2_time = millis();
       abbasso2 = true;
     }
@@ -59,6 +64,8 @@ void engineStop(uint8_t e_id, bool force_stop) {
 
   if(e_id == 1 && (force_stop || ((ioport.PCARead(FINECORSA_UP1) == 0) || (ioport.PCARead(FINECORSA_DOWN1) == 0)))) {
     if(alzo1 || abbasso1) Serial.printf("STOP MOTORE 1 --- tempo: %.2f\n", (millis()-e1_time)/1000.00);
+    digitalWrite(OUT_UP1,LOW);
+    digitalWrite(OUT_DOWN1,LOW);
     alzo1 = false;
     abbasso1 = false;
     counters[0].counter = 0;
@@ -67,6 +74,8 @@ void engineStop(uint8_t e_id, bool force_stop) {
        
   } else if(force_stop || (ioport.PCARead(FINECORSA_UP2) == 0) || (ioport.PCARead(FINECORSA_DOWN2) == 0)) {
      if(alzo2 || abbasso2) Serial.printf("STOP MOTORE 2 --- tempo: %.2f\n", (millis()-e2_time)/1000.00);
+    digitalWrite(OUT_UP2,LOW);
+    digitalWrite(OUT_DOWN2,LOW);
     alzo2 = false;
     abbasso2 = false;
     counters[1].counter = 0;
@@ -161,6 +170,7 @@ void configMode() {
   Serial.println("Conf mode...");
   delay(1000);
   Serial.println("Alzo Motore 1");
+  digitalWrite(OUT_UP1,HIGH);
   int t = millis();
   float temp1 = 0, temp2 = 0;    
   do {
@@ -173,6 +183,8 @@ void configMode() {
 
   } while(ioport.PCARead(FINECORSA_UP1) == 1);
 
+  digitalWrite(OUT_UP1,LOW);
+
   if(ioport.PCARead(FINECORSA_UP1) == 0) {
       temp1 = (millis() - t) / 1000.00;
       Serial.printf("Stop Motore 1 -- tempo salita:%.2f\n", temp1);
@@ -181,6 +193,7 @@ void configMode() {
   delay(1000);
 
   Serial.println("Alzo Motore 2");
+  digitalWrite(OUT_UP2,HIGH);
   t = millis();
   do {
 
@@ -191,6 +204,8 @@ void configMode() {
     }
 
   } while(ioport.PCARead(FINECORSA_UP2) == 1);
+
+  digitalWrite(OUT_UP2,LOW);
 
   if(ioport.PCARead(FINECORSA_UP2) == 0) {
       temp2 = (millis() - t) / 1000.00;
@@ -203,13 +218,25 @@ void configMode() {
     full_time_motore1 = temp1;
     step_1 = full_time_motore1 / STEPS;
     Serial.printf("Step motore 1: %.2f\n", step_1);
+    // scrivo su eeprom tempo apertura motore 1
+    // EEPROM.put(ADDR_T1,full_time_motore1);
   }
 
   if(temp2 != 0) {
     full_time_motore2 = temp2;
     step_2 = full_time_motore2 / STEPS;
     Serial.printf("Step motore 2: %.2f\n", step_2);
+    // EEPROM.put(ADDR_T2,full_time_motore2);
   }
+
+  // if (EEPROM.commit()) {
+  //     Serial.println("EEPROM successfully committed");
+  //     float test;
+  //     EEPROM.get(ADDR_T1,test);
+  //     Serial.println(test);
+  // } else {
+  //   Serial.println("ERROR! EEPROM commit failed");
+  // }
 }
 
 

@@ -34,9 +34,23 @@
 #define FINECORSA_DOWN2 7
 
 
-#define MAX_CONF_TIME 30
+#define MAX_CONF_TIME 60
 #define STEPS 5
 
+#define ACT1 8
+#define ACT2 9
+#define ACT3 10
+#define ACT4 11
 
+
+// pin motori
+#define OUT_UP1 8
+#define OUT_DOWN1 9
+#define OUT_UP2 10
+#define OUT_DOWN2 11
+
+
+#define ADDR_T1 1
+#define ADDR_T2 5
 
 #endif
