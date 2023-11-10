@@ -166,6 +166,31 @@ int checkConfigMode() {
   return 0;
 }
 
+void writeOpenTime(int addr, float value) {
+  // eeprom write (4 byte float)
+  EEPROM.put(addr,value);
+  if (EEPROM.commit()) {
+    Serial.println("EEPROM successfully committed");
+  } else {
+    Serial.println("ERROR! EEPROM commit failed");
+  }
+}
+void setFullTime1(float t) {
+  full_time_motore1 = t;
+}
+
+void setFullTime2(float t) {
+  full_time_motore2 = t;
+}
+
+void setStep1(float step) {
+  step_1 = step;
+}
+
+void setStep2(float step) {
+  step_2 = step;
+}
+
 void configMode() {
   Serial.println("Conf mode...");
   delay(1000);
@@ -215,28 +240,21 @@ void configMode() {
   // calcolo steps
 
   if(temp1 != 0) {
-    full_time_motore1 = temp1;
-    step_1 = full_time_motore1 / STEPS;
+    setFullTime1(temp1);
+    setStep1(full_time_motore1 / STEPS);
+    writeOpenTime(ADDR_T1, full_time_motore1);
     Serial.printf("Step motore 1: %.2f\n", step_1);
-    // scrivo su eeprom tempo apertura motore 1
-    // EEPROM.put(ADDR_T1,full_time_motore1);
+   
   }
 
   if(temp2 != 0) {
-    full_time_motore2 = temp2;
-    step_2 = full_time_motore2 / STEPS;
+    setFullTime2(temp2);
+    setStep2(full_time_motore2 / STEPS);
+    writeOpenTime(ADDR_T2, full_time_motore2);
     Serial.printf("Step motore 2: %.2f\n", step_2);
-    // EEPROM.put(ADDR_T2,full_time_motore2);
   }
 
-  // if (EEPROM.commit()) {
-  //     Serial.println("EEPROM successfully committed");
-  //     float test;
-  //     EEPROM.get(ADDR_T1,test);
-  //     Serial.println(test);
-  // } else {
-  //   Serial.println("ERROR! EEPROM commit failed");
-  // }
+  EEPROM.end();
 }
 
 

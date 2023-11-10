@@ -14,8 +14,26 @@ void setup() {
 
   Serial.println("setup...");
 
-  // // init EEPROM
-  // EEPROM.begin(512);
+  // init EEPROM
+  EEPROM.begin(16);
+
+  Serial.println("reading eeprom...");
+  
+  if(EEPROM.read(0) != 0) {
+    float t;
+
+    Serial.print("reading time 1: ");
+    EEPROM.get(ADDR_T1,t);
+    Serial.println(t);
+    setFullTime1(t);
+    setStep1(t / STEPS);
+
+    Serial.print("reading time 2: ");
+    EEPROM.get(ADDR_T2,t);
+    Serial.println(t);
+    setFullTime2(t);
+    setStep2(t / STEPS);
+  }
 
   delay(100);
 
