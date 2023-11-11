@@ -1,3 +1,4 @@
+#include "ASR_Arduino.h"
 #include <sys/types.h>
 #include <Arduino.h>
 #include <EEPROM.h>
@@ -21,7 +22,7 @@ bool alzo2 = false, abbasso2 = false;
 bool stop1 = false, stop2 = false;
  
 
-void engineUp(uint8_t e_id, uint8_t counter) {
+void engineUp(uint8_t e_id) {
     
 
   //controllo se finecorsa superiore motore non raggiunto e non sto già alzando
@@ -41,7 +42,7 @@ void engineUp(uint8_t e_id, uint8_t counter) {
   } 
 }
 
-void engineDown(uint8_t e_id, uint8_t counter) {
+void engineDown(uint8_t e_id) {
   //controllo se finecorsa inferiore motore non raggiunto
   if(ioport.PCARead(e_id == 1 ? FINECORSA_DOWN1 : FINECORSA_DOWN2) == 1 && !(e_id == 1 ? abbasso1 : abbasso2)) {
     // se finecorsa superiore raggiunto => abbasso tutto
@@ -93,26 +94,26 @@ void doAction(uint8_t counter, uint8_t index) {
       case UP1: {
         Serial.printf("UP MOTORE 1 --- %d\n",counter);
         pression_1 = counter;
-        engineUp(1,counter);
+        engineUp(1);
       }
       break;
 
       case DOWN1: {
         Serial.printf("DOWN MOTORE 1 --- %d\n",counter);
         pression_1 = counter;
-        engineDown(1,counter);
+        engineDown(1);
       }
       break;
       case UP2: {
         Serial.printf("UP MOTORE 2 --- %d\n",counter);
         pression_2 = counter;
-        engineUp(2,counter);
+        engineUp(2);
       }
       break;
       case DOWN2: {
         Serial.printf("DOWN MOTORE 2 --- %d\n",counter);
         pression_2 = counter;
-        engineDown(2,counter);
+        engineDown(2);
       }
       break;
     }
@@ -191,6 +192,15 @@ void setStep2(float step) {
   step_2 = step;
 }
 
+void setPression1(u_short p) {
+  pression_1 = p;
+}
+
+void setPression2(u_short p) {
+  pression_2 = p;
+}
+
+
 void configMode() {
   Serial.println("Conf mode...");
   delay(1000);
@@ -237,8 +247,8 @@ void configMode() {
       Serial.printf("Stop Motore 2 -- tempo salita:%.2f\n", temp2);
   }
 
+  EEPROM.begin(16);
   // calcolo steps
-
   if(temp1 != 0) {
     setFullTime1(temp1);
     setStep1(full_time_motore1 / STEPS);
@@ -283,8 +293,18 @@ void initPin() {
   ioport.PMode(13, PIN13);
   ioport.PMode(14, PIN14);
   ioport.PMode(15, PIN15);
-
+  
   for (int i = 0; i < 16; i++) {
     ioport.PCAWrite(i, 0);
   }
+
+  pinMode(OUT_UP1, OUTPUT);
+  pinMode(OUT_DOWN1, OUTPUT);
+  pinMode(OUT_UP2, OUTPUT);
+  pinMode(OUT_DOWN2, OUTPUT);
+  digitalWrite(OUT_UP1, LOW);
+  digitalWrite(OUT_DOWN1, LOW);
+  digitalWrite(OUT_UP2, LOW);
+  digitalWrite(OUT_DOWN2, LOW);
+
 }

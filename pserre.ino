@@ -3,7 +3,7 @@
 // #include "../libs/PCA9539.h"
 #include "./header/macros.h"
 #include <EEPROM.h>
-
+#include "./header/loraHandler.h"
 
 uint32_t t = 0;
 uint16_t address = 0;
@@ -34,15 +34,23 @@ void setup() {
     setFullTime2(t);
     setStep2(t / STEPS);
   }
-
+  EEPROM.end();
+  
   delay(100);
 
+  Serial.println("init pins...");
   initPin();
   
   delay(100);
 
-  Serial.println("done");
-  digitalWrite(13, HIGH);
+  Serial.println("LoRa setup...");
+
+  loraSetup();
+
+  delay(100);
+
+  Serial.println("all done");
+
 }
 
 
@@ -64,12 +72,8 @@ void loop() {
     if(checkStopEngine2() == 1) engineStop(2,true);
   }
 
-  // stampa di debug
-  // if(millis() - t > 5000) {
-  //   // Serial.printf("\tUP --- DOWN\nmotore1\t%d  ---  %d\nmotore2\t%d  ---  %d\n",alzo1,abbasso1,alzo2,abbasso2);
-  //   t = millis();
-  // }
-  
+
+  loraLoop();
 }
 
 

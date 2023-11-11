@@ -15,11 +15,13 @@ struct  tc {
 typedef struct tc TimeCounter;
 
 
-void engineUp(uint8_t e_id, uint8_t counter);
-void engineDown(uint8_t e_id, uint8_t counter);
+void engineUp(uint8_t e_id);
+void engineDown(uint8_t e_id);
 void engineStop(uint8_t e_id, bool force_stop);
 // void stampaPressioni(uint8_t counter, uint8_t index);
 void contaPressioni(uint8_t index);
+void setPression1(u_short p);
+void setPression2(u_short p);
 // uint8_t checkManualStop(uint8_t index);
 void initPin();
 int checkConfigMode();
