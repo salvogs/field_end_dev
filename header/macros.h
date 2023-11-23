@@ -44,10 +44,10 @@
 
 
 // pin motori
-#define OUT_UP1 8
-#define OUT_DOWN1 9
-#define OUT_UP2 10
-#define OUT_DOWN2 11
+#define OUT_UP1 GPIO7
+#define OUT_DOWN1 GPIO8
+#define OUT_UP2 GPIO9
+#define OUT_DOWN2 GPIO10
 
 
 #define ADDR_T1 1

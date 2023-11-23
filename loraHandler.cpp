@@ -2,8 +2,7 @@
 #include "Arduino.h"
 #include "./header/loraHandler.h"
 #include "./header/engine_function.h"
-
-
+#include <CayenneLPP.h>//the library is needed ��https://github.com/ElectronicCats/CayenneLPP��
 
 
 /*
@@ -83,11 +82,21 @@ static void prepareTxFrame( uint8_t port )
 	*for example, if use REGION_CN470, 
 	*the max value for different DR can be found in MaxPayloadOfDatarateCN470 refer to DataratesCN470 and BandwidthsCN470 in "RegionCN470.h".
 	*/
-    appDataSize = 4;
-    appData[0] = 0x00;
-    appData[1] = 0x01;
-    appData[2] = 0x02;
-    appData[3] = 0x03;
+    CayenneLPP lpp(LORAWAN_APP_DATA_MAX_SIZE);
+    lpp.addGPS(1, -12.34f, 45.56f, 9.01f);
+    lpp.addGyrometer(1, -12.34f, 45.56f, 89.01f);
+    lpp.addTemperature(1, 22.5);
+    lpp.addBarometricPressure(2, 1073.21);
+    // lpp.addVoltage(1,220.2f);
+    // lpp.addPower(1,12);
+    // lpp.addEnergy(1,50.27f);
+    // lpp.addGenericSensor(2,22);
+    lpp.addGenericSensor(3,12.2);
+    // lpp.addGenericSensor(4,0.77);
+    lpp.getBuffer(), 
+    appDataSize = lpp.getSize();
+    Serial.println(appDataSize);
+    memcpy(appData,lpp.getBuffer(),appDataSize);
 }
 
 
@@ -103,13 +112,13 @@ void downLinkDataHandle(McpsIndication_t *mcpsIndication) {
   int recieved_command = (uint8_t)mcpsIndication->Buffer[0];
   int instruction = (uint8_t)mcpsIndication->Buffer[1];
 
-  if (recieved_command == DUTYCYCLE)  // DC for APP_TX_DUTYCYCLE; DC 00 3A 98 for 170sec; DC 00 75 30 for 5min; 0D BB A0  for 900000 (15min); DC075300 (80min)
-  {
-    appTxDutyCycle = (uint32_t)mcpsIndication->Buffer[1] << 32 | mcpsIndication->Buffer[2] << 16 | mcpsIndication->Buffer[3] << 8 | mcpsIndication->Buffer[4];
-    Serial.print("  new DutyCycle received: ");
-    Serial.print(appTxDutyCycle);
-    Serial.println("ms");
-  }
+  // if (recieved_command == DUTYCYCLE)  // DC for APP_TX_DUTYCYCLE; DC 00 3A 98 for 170sec; DC 00 75 30 for 5min; 0D BB A0  for 900000 (15min); DC075300 (80min)
+  // {
+  //   appTxDutyCycle = (uint32_t)mcpsIndication->Buffer[1] << 32 | mcpsIndication->Buffer[2] << 16 | mcpsIndication->Buffer[3] << 8 | mcpsIndication->Buffer[4];
+  //   Serial.print("  new DutyCycle received: ");
+  //   Serial.print(appTxDutyCycle);
+  //   Serial.println("ms");
+  // }
 
 
   if (recieved_command == APRI_SERRA)  // serra apre
@@ -199,7 +208,7 @@ void loraLoop() {
 		}
 		case DEVICE_STATE_SLEEP:
 		{
-			LoRaWAN.sleep();
+			// LoRaWAN.sleep();
 			break;
 		}
 		default:

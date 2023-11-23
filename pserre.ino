@@ -50,7 +50,7 @@ void setup() {
   delay(100);
 
   Serial.println("all done");
-
+  
 }
 
 
@@ -68,12 +68,13 @@ void loop() {
     
     if(i == FINECORSA_UP1 || i == FINECORSA_DOWN1 || i == FINECORSA_UP2 || i == FINECORSA_DOWN2) engineStop((i % 2) + 1,false);
     
-    if(checkStopEngine1() == 1) engineStop(1,true);
-    if(checkStopEngine2() == 1) engineStop(2,true);
   }
+  if(checkStopEngine1() == 1) engineStop(1,true);
+  if(checkStopEngine2() == 1) engineStop(2,true);
 
 
   loraLoop();
+
 }
 
 
